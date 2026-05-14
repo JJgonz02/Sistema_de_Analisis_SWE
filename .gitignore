@@ -1,0 +1,23 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.env/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# Exported files
+*.pdf
+*.csv
+*.xlsx
