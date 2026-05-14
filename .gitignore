@@ -18,6 +18,5 @@ dist/
 *.log
 
 # Exported files
-*.pdf
 *.csv
 *.xlsx
