@@ -15,16 +15,17 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QSlider, QPushButton,
     QLineEdit, QSizePolicy, QStackedWidget,
-    QButtonGroup,
+    QButtonGroup, QFileDialog, QMessageBox,
 )
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap, QImage
 
 from estilos import (
     DARK_BG, PANEL_BG, PANEL_DEEP, BORDER, ACCENT, TEXT_MAIN, TEXT_DIM,
-    TAB_ACTIVE, TAB_INACTIVE, NAV_BTN,
+    TAB_ACTIVE, TAB_INACTIVE, NAV_BTN, BTN_STYLE,
 )
 from utils_ui import crear_separador
+from export_results import exportar_resultados
 
 
 TAB_FRAME  = 0
@@ -88,6 +89,17 @@ class AnalysisWindow(QWidget):
         self._tab_btns[TAB_FRAME].setChecked(True)
         self._aplicar_estilos_pestanas()
         self._tab_group.idClicked.connect(self._al_cambiar_pestana)
+
+        lay_izq.addWidget(crear_separador())
+
+        # Botón de exportación
+        self._export_btn = QPushButton("Exportar resultados")
+        self._export_btn.setFixedHeight(34)
+        self._export_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self._export_btn.setStyleSheet(BTN_STYLE)
+        self._export_btn.setCursor(Qt.PointingHandCursor)
+        self._export_btn.clicked.connect(self._exportar)
+        lay_izq.addWidget(self._export_btn)
 
         lay_izq.addWidget(crear_separador())
 
@@ -472,6 +484,43 @@ class AnalysisWindow(QWidget):
         activa = self._tab_group.checkedId()
         for tab_id, btn in self._tab_btns.items():
             btn.setStyleSheet(TAB_ACTIVE if tab_id == activa else TAB_INACTIVE)
+
+    # ──────────────────────────────────────────────────────────────────
+    # Exportación de resultados
+    # ──────────────────────────────────────────────────────────────────
+
+    def _exportar(self):
+        """Abre un diálogo para elegir carpeta y genera PDF + Excel."""
+        carpeta = QFileDialog.getExistingDirectory(
+            self,
+            "Seleccionar carpeta de destino",
+            "",
+            QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks,
+        )
+        if not carpeta:
+            return
+
+        self._export_btn.setEnabled(False)
+        self._export_btn.setText("Exportando…")
+
+        try:
+            ruta_pdf, ruta_excel = exportar_resultados(self.resultado, carpeta)
+            QMessageBox.information(
+                self,
+                "Exportación completada",
+                f"Archivos guardados correctamente:\n\n"
+                f"  📄  {ruta_pdf}\n"
+                f"  📊  {ruta_excel}",
+            )
+        except Exception as exc:
+            QMessageBox.critical(
+                self,
+                "Error al exportar",
+                f"No se pudieron generar los archivos:\n\n{exc}",
+            )
+        finally:
+            self._export_btn.setEnabled(True)
+            self._export_btn.setText("⬇  Exportar resultados")
 
     # ──────────────────────────────────────────────────────────────────
     # Helpers

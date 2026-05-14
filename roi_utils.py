@@ -3,8 +3,8 @@
 # a partir de los metadatos DICOM (SequenceOfUltrasoundRegions).
 #
 # En estos archivos DICOM de elastografía hay varias regiones definidas:
-#   - Una región B-Mode (dt=1): la imagen de ultrasonido clásica
-#   - Una región SWE (dt=2 o dt=6): el mapa de color de rigidez
+#   - Una región B-Mode: la imagen de ultrasonido clásica
+#   - Una región SWE: el mapa de color de rigidez
 #   - Una región interna más pequeña: el área de medición fina dentro del SWE
 #
 # Si los tipos de datos no permiten identificarlas, se usa la posición vertical:
